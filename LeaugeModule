@@ -1,0 +1,110 @@
+import java.awt.*;
+import java.awt.event.InputEvent;
+import java.awt.image.BufferedImage;
+import java.util.concurrent.ThreadLocalRandom;
+
+public class LoL extends main { // TODO - Add assists, check entire killfeed. Minion score = multiplier, just need to check minion score area.
+    int randomNumScore = ThreadLocalRandom.current().nextInt(1000, 4000 + 1);
+    boolean picRelease = false;
+    int score = randomNumScore;
+    int secondsAllowance = 0;
+    int globalmultiplier = 0;
+    int minionMulti = 0;
+    int amountOfKills = 0;
+    int amountOfDeaths = 0;
+    void screenShot() throws AWTException, InterruptedException {
+        while (!picRelease) { // Decs
+            int colorCount = 0;
+            int colorCount2 = 0;
+            int colorCount3 = 0;
+            boolean colorFound = false;
+            boolean colorFound2 = false;
+            boolean colorFound3 = false;
+
+            Robot droid = new Robot();
+            Thread.sleep(1000);
+            Rectangle screenArea1 = new Rectangle();
+            Rectangle screenArea2 = new Rectangle();
+            Rectangle screenArea3 = new Rectangle();
+            screenArea1.setBounds(662, 968, 30, 30); // Death Score
+            screenArea2.setBounds(1743, 254, 42, 42); // Kill Score.
+            screenArea3.setBounds(662, 968, 30, 30); // Minion score.
+            BufferedImage screenCap = droid.createScreenCapture(screenArea1);
+            BufferedImage screenCap2 = droid.createScreenCapture(screenArea2);
+            BufferedImage screenCap3 = droid.createScreenCapture(screenArea3);
+            Color[] colorSet = new Color[900];
+            Color[] colorSet2 = new Color[1764];
+            Color[] colorSet3 = new Color[1764];
+            for (int x = 0, totalPixels = 0; x < screenCap.getWidth(); x++) {
+                for (int y = 0; y < screenCap.getHeight(); y++) {
+                    int c = screenCap.getRGB(x, y);
+                    Color color = new Color(c);
+                    colorSet[totalPixels] = color;
+                    totalPixels++;
+                } // Counting and adding each pixel to a color set.
+            }
+            for (int i = 0; i < 900; i++) {
+                if (colorSet[i].getRed() > 100 && colorSet[i].getGreen() < 30 && colorSet[i].getBlue() < 30 ) {
+                    colorCount++;
+                }
+                if (colorCount > 30) {
+                    colorFound = true;
+                }
+            }
+
+            for (int x = 0, totalPixels = 0; x < screenCap2.getWidth(); x++) {
+                for (int y = 0; y < screenCap2.getHeight(); y++) {
+                    int c = screenCap2.getRGB(x, y);
+                    Color color = new Color(c);
+                    colorSet2[totalPixels] = color;
+                    totalPixels++;
+                } // Counting and adding each pixel to a color set.
+            }
+
+
+            for (int x = 0, totalPixels = 0; x < screenCap3.getWidth(); x++) {
+                for (int y = 0; y < screenCap3.getHeight(); y++) {
+                    int c = screenCap3.getRGB(x, y);
+                    Color color = new Color(c);
+                    colorSet3[totalPixels] = color;
+                    totalPixels++;
+                } // Counting and adding each pixel to a color set.
+            }
+
+            for (int i = 0; i < 1764; i++) {
+                if (colorSet2[i].getRed() > 200 && colorSet2[i].getGreen() > 220 && colorSet2[i].getBlue() < 100 ) {
+                    colorCount2++;
+                }
+                if (colorCount2 > 10) {
+                    colorFound2 = true;
+                }
+            }
+
+            for (int i = 0; i < 1764; i++) {
+                if (colorSet3[i].getRed() > 200 && colorSet3[i].getGreen() > 220 && colorSet3[i].getBlue() < 100 ) {
+                    colorCount3++;
+                }
+                if (colorCount3 > 0 && amountOfDeaths > 0 && amountOfKills > 0) {
+                    minionMulti = colorCount3 * amountOfKills / amountOfDeaths;
+                }
+            }
+
+            if (colorFound) { // Reward score based on colors detected.
+                System.out.println("Death found.");
+                amountOfDeaths++;
+                Thread.sleep(60000);
+                score = score - amountOfDeaths;
+            }
+
+            if (colorFound2) { // Reward score based on colors detected.
+                System.out.println("Kill found.");
+                amountOfKills++;
+                score = score + amountOfKills * 10
+            }
+
+            System.out.println("*************************************************");
+            System.out.println("Current score is " + score);
+            System.out.println("*************************************************"); // Score printout.
+        }
+    }
+}
